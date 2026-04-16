@@ -18,6 +18,8 @@ export class ApiService {
       },
       body: JSON.stringify({
         // Todo compléter le body
+            pseudo: pseudo,
+            difficulty: difficulty
       })
     });
 

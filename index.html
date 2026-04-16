@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +8,51 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="js/app.js" type="module"></script>
 </head>
+
 <body>
-<header><h1>Jeu de Memory</h1></header>
+  <header>
+    <h1>Jeu de Memory</h1>
+  </header>
 
-<div class="setup-form">
-  <h2>Démarrer une nouvelle partie</h2>
+  <div class="setup-form">
+    <h2>Démarrer une nouvelle partie</h2>
+    <div class="game-form">
+      <label for="input-name">Votre pseudo</label>
+      <input type="text" id="input-name" placeholder="Entrez votre nom…" maxlength="30" autocomplete="off">
+    </div>
 
-</div>
+    <div class="game-form">
+      <label for="input-difficulty">Niveau de difficulté</label>
+      <div class="select-wrap">
+        <select id="input-difficulty">
+          <option value="facile">😊 Facile — 16 cartes (3 min)</option>
+          <option value="moyen" selected>🤔 Moyen — 24 cartes (4 min)</option>
+          <option value="difficile">😈 Difficile — 32 cartes (5 min)</option>
+        </select>
+      </div>
+    </div>
 
-<div class="game-area hidden">
-  <div class="game-area-header"></div>
-  <div class="game-board"></div>
-</div>
+    <div class="game-form">
+      <label for="input-collection">Collection d'images</label>
+      <div class="select-wrap">
+        <select id="input-collection">
+          <option value="animaux">🐾 Animaux</option>
+          <option value="fruits">🍎 Fruits</option>
+          <option value="cars">🏎️ Cars</option>
+        </select>
+      </div>
+    </div>
+    <div class="game-form">
+      <button id="btn-start" type="submit">🃏 Commencer la partie</button>
+    </div>
+    
+  </div>
+  </div>
+
+  <div class="game-area hidden">
+    <div class="game-area-header"></div>
+    <div class="game-board"></div>
+  </div>
 </body>
+
 </html>

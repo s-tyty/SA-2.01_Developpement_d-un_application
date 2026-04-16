@@ -9,7 +9,7 @@ const game = new Game();
 document.querySelector('.game-form').addEventListener('submit', async function (event) {
   event.preventDefault();
   // Todo À compléter
-
+  
   try {
     // Todo Spécifier les paramètres de createGame()
     const data = await ApiService.createGame();
