@@ -44,7 +44,7 @@ export class Game {
     const cards = [];
     for (let i = 0; i < numGroups; i++) {
       const img = col[i % col.length]; 
-      const groupId = `${img.id}-g${i}`;
+      const groupId = `${img.id}`;
       for (let c = 0; c < COPIES_PER_IMAGE; c++) {
         cards.push({ ...img, id: groupId, uniqueId: `${groupId}-${c}` });
       }

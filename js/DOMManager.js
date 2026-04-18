@@ -75,12 +75,19 @@ export class DOMManager {
   createCards(images, onCardClick) {
     const gameBoard = document.querySelector('.game-board');
     gameBoard.innerHTML = '';
+
+    if (images.length > 20) {
+        gameBoard.classList.add('cols-5'); 
+    } else {
+        gameBoard.classList.remove('cols-5');
+    }
+
     images.forEach(cardData => {
       const card = document.createElement('div');
       card.className = 'card';
       card.dataset.imageId = String(cardData.id);
       card.dataset.uniqueId = cardData.uniqueId;
-
+      console.log("card.dataset.imageId:", card.dataset.imageId, "cardData.id:", cardData.id);
       const inner = document.createElement('div');
       inner.className = 'card-inner';
 
