@@ -2,7 +2,8 @@ import {MEMORY_URL} from './config.js';
 
 /**
  * Service pour centraliser les appels API du jeu Memory.
- */
+*/
+
 export class ApiService {
   /**
    * Crée une nouvelle partie sur le serveur.
@@ -10,20 +11,27 @@ export class ApiService {
    * @param {number} difficulty niveau de difficulé
    * @returns {Promise<GameReturn>}
    */
-  static async createGame(pseudo, difficulty) {
-    const response = await fetch(`${MEMORY_URL}/`, {
+  static async createGame(pseudo, difficulty,collection) {
+    const difficultyMap = { 'facile': 1, 'moyen': 2, 'difficile': 3 };
+    const diffValue = difficultyMap[difficulty] || 2;
+
+    const response = await fetch(`${MEMORY_URL}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
-        // Todo compléter le body
-            pseudo: pseudo,
-            difficulty: difficulty
+            name: pseudo,
+            difficulty: diffValue,
+            collection: collection
       })
     });
+    console.log('API Response:', response);
 
     if (!response.ok) {
+      const errorDetail = await response.json();
+      console.log("Détails de l'erreur du serveur :", errorDetail);
       throw new Error('Erreur lors de la création de la partie');
     }
 
@@ -40,7 +48,8 @@ export class ApiService {
     const response = await fetch(`${MEMORY_URL}/${gameId}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
         nombreCoupsRestant: pairsRemaining,

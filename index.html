@@ -16,30 +16,30 @@
 
   <div class="setup-form">
     <h2>Démarrer une nouvelle partie</h2>
-    <div class="game-form">
+    <form class="game-form">
       <label for="input-name">Votre pseudo</label>
       <input type="text" id="input-name" placeholder="Entrez votre nom…" maxlength="30" autocomplete="off">
       <label for="input-difficulty">Niveau de difficulté</label>
-      <div class="select-wrap">
+      <div>
         <select id="input-difficulty">
-          <option value="facile">😊 Facile — 16 cartes (3 min)</option>
-          <option value="moyen" selected>🤔 Moyen — 24 cartes (4 min)</option>
+          <option value="facile">😊 Facile — 8 cartes (3 min)</option>
+          <option value="moyen" selected>🤔 Moyen — 16 cartes (4 min)</option>
           <option value="difficile">😈 Difficile — 32 cartes (5 min)</option>
         </select>
       </div>
       <label for="input-collection">Collection d'images</label>
-      <div class="select-wrap">
+      <div>
         <select id="input-collection">
-          <option value="animaux">🐾 Animals</option>
+          <option value="animals">🐾 Animals</option>
           <option value="fruits">🍎 Fruits</option>
           <option value="cars">🏎️ Cars</option>
         </select>
       </div>
       <button id="btn-start" type="submit">🃏 Commencer la partie</button>
-    </div>
+    </form>
   </div>
 
-  <div class="game-area hidden">
+  <div class="game-area">
     <div class="game-area-header"></div>
     <div class="game-board"></div>
   </div>
