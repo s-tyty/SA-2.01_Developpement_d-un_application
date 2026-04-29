@@ -30,7 +30,7 @@ export class DOMManager {
     this.gameArea.classList.add('hidden');
   }
 
-  createHeader(playerName, timeSeconds, totalPairs, onAbandon) {
+  createHeader(playerName, timeSeconds, totalEnsembles, onAbandon) {
     this.gameAreaHeader.innerHTML = '';
 
     const nameEl = document.createElement('span');
@@ -41,7 +41,7 @@ export class DOMManager {
     this.pairsEl = document.createElement('span');
     this.pairsEl.className = 'header-pairs';
     this.pairsEl.style.color = 'white';
-    this.updatePairsInfo(totalPairs, totalPairs);
+    this.updatePairsInfo(totalEnsembles, totalEnsembles);
 
     this.timerEl = document.createElement('span');
     this.timerEl.className = 'game-timer';
@@ -65,7 +65,7 @@ export class DOMManager {
 
   updatePairsInfo(remaining, total) {
     if (!this.pairsEl) return;
-    this.pairsEl.textContent = `🃏 ${total - remaining} / ${total} paires`;
+    this.pairsEl.textContent = `🃏 ${total - remaining} / ${total} ensembles`;
   }
 
   showEndMessage(message) {
@@ -76,11 +76,8 @@ export class DOMManager {
     const gameBoard = document.querySelector('.game-board');
     gameBoard.innerHTML = '';
 
-    if (images.length > 20) {
-        gameBoard.classList.add('cols-5'); 
-    } else {
-        gameBoard.classList.remove('cols-5');
-    }
+    gameBoard.style.gridTemplateColumns = 'repeat(4, 1fr)';
+
 
     images.forEach(cardData => {
       const card = document.createElement('div');

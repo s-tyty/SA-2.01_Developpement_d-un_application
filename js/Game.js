@@ -1,7 +1,7 @@
 import { imageCollections } from './ImageCollection.js';
 import { ApiService } from './ApiService.js';
 
-const COPIES_PER_IMAGE = 2;
+const COPIES_PER_IMAGE = 4;
 
 const DIFFICULTY_CONFIG = {
   'facile': { totalCards: 8, timeSeconds: 120 },
@@ -71,6 +71,7 @@ export class Game {
   }
 
   handleCardClick(card) {
+    // Empêcher de cliquer si le plateau est verrouillé ou si la carte est déjà retournée/trouvée
     if (this.isLocked ||
       card.classList.contains('matched') ||
       card.classList.contains('flipped')) {
@@ -80,30 +81,39 @@ export class Game {
     card.classList.add('flipped');
     this.flippedCards.push(card);
 
-    if (this.flippedCards.length === 2) {
+    // Déclencher la vérification seulement quand on a 4 cartes
+    if (this.flippedCards.length === 4) {
       this.checkMatch();
     }
   }
 
   checkMatch() {
     this.isLocked = true;
-    const [card1, card2] = this.flippedCards;
-    if (card1.dataset.imageId === card2.dataset.imageId) {
-      card1.classList.add('matched');
-      card2.classList.add('matched');
-      this.matchedPairs++;
+
+    // On récupère les 4 cartes retournées
+    const [c1, c2, c3, c4] = this.flippedCards;
+
+    // On vérifie si les 4 ont le même ID d'image
+    const isMatch = c1.dataset.imageId === c2.dataset.imageId &&
+        c1.dataset.imageId === c3.dataset.imageId &&
+        c1.dataset.imageId === c4.dataset.imageId;
+
+    if (isMatch) {
+      // Si ça match, on les marque toutes comme trouvées
+      this.flippedCards.forEach(card => card.classList.add('matched'));
+      this.matchedPairs++; // Ici, matchedPairs compte en réalité les "quatuors"
+
       this.dom.updatePairsInfo(this.totalPairs, this.remainingPairs);
       this.flippedCards = [];
       this.isLocked = false;
-      console.log(`matchedPairs: ${this.matchedPairs}, totalPairs: ${this.totalPairs}`);
+
       if (this.matchedPairs === this.totalPairs) {
         this.endGame();
       }
-    }
-    else {
+    } else {
+      // Si ça ne match pas, on les recache après 1 seconde
       setTimeout(() => {
-        card1.classList.remove('flipped');
-        card2.classList.remove('flipped');
+        this.flippedCards.forEach(card => card.classList.remove('flipped'));
         this.flippedCards = [];
         this.isLocked = false;
       }, 1000);
@@ -145,17 +155,13 @@ export class Game {
     const config = DIFFICULTY_CONFIG[difficulty];
     console.log("Config: ", config);
     this.timeLeft = config.timeSeconds;
-    this.totalPairs = config.totalCards / 2;
+    this.totalPairs = config.totalCards / 4;
     console.log(this.totalPairs);
     this.dom.hideSetupForm();
     this.dom.showGameArea();
 
     this.dom.createHeader(playerName, this.timeLeft, this.totalPairs, () => {
-      if (confirm("Voulez-vous vraiment abandonner ?")) {
-        this.stopTimer();
-        this.dom.hideGameArea();
-        this.dom.showSetupForm();
-      }
+      this.onAbandon();
     });
 
     const cards = this.prepareCards(collection, config.totalCards);
