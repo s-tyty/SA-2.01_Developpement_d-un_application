@@ -29,6 +29,7 @@
 
   /* Chronomètre */
   --color-timer: oklch(0.773 0.153 163.223);
+  --color-warning: oklch(0.75 0.18 65);
 }
 
 /* ── Reset & base ── */
@@ -138,10 +139,11 @@ header h1 {
 }
 
 .game-area-header {
+  color: var(--color-text-white);
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .game-area-header h2 {
@@ -172,13 +174,23 @@ header h1 {
   color: var(--color-timer);
 }
 
+/* Chrono rouge + clignotement sous les 30 s */
+.game-timer.timer-warning {
+  color: var(--color-btn-danger);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
 /* ── Game board (CSS Grid) ── */
 .game-board {
   display: grid;
   gap: 1rem;
   justify-items: center;
   grid-template-columns: repeat(4, 1fr);
-
 }
 
 .game-board.cols-5 {
@@ -198,6 +210,13 @@ header h1 {
   cursor: pointer;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  /* Fonctionnalité 2 : apparition en cascade (délai posé dans DOMManager) */
+  animation: card-appear 0.35s ease both;
+}
+
+@keyframes card-appear {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @media (min-width: 768px) {
@@ -215,7 +234,9 @@ header h1 {
   transform-style: preserve-3d;
 }
 
-.card.flipped .card-inner {
+/* Fonctionnalité 2 : flipped / matched déclenchent le flip */
+.card.flipped .card-inner,
+.card.matched .card-inner {
   transform: rotateY(180deg);
 }
 
@@ -251,4 +272,220 @@ header h1 {
   height: 100%;
   object-fit: cover;
   border-radius: 0.5rem;
+}
+
+
+.card.matched .card-back {
+  border: 2px solid var(--color-text-title);
+  box-shadow: 0 0 8px oklch(0.696 0.149 162.48 / 0.45);
+}
+
+@keyframes match-flash {
+  0%   { transform: rotateY(180deg) scale(1); }
+  35%  { transform: rotateY(180deg) scale(1.1); }
+  70%  { transform: rotateY(180deg) scale(0.96); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+
+.card.match-flash .card-inner {
+  animation: match-flash 0.4s ease;
+}
+
+.timer-bar-container {
+  width: 100%;
+  height: 5px;
+  background-color: var(--color-bg-input);
+  border-radius: 3px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  width: 100%;
+  border-radius: 3px;
+  background-color: var(--color-text-title);
+  transition: width 1s linear, background-color 0.5s;
+}
+
+.timer-bar.bar-ok     { background-color: var(--color-text-title); }
+.timer-bar.bar-warn   { background-color: var(--color-warning); }
+.timer-bar.bar-danger {
+  background-color: var(--color-btn-danger);
+  animation: pulse 0.8s infinite;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.modal-overlay.modal-visible { opacity: 1; }
+
+.modal-box {
+  background-color: var(--color-bg-panel);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  transform: translateY(14px);
+  transition: transform 0.3s;
+}
+
+.modal-overlay.modal-visible .modal-box { transform: translateY(0); }
+
+.modal-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+
+.modal-box h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin-bottom: 1.5rem;
+}
+
+.modal-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-title);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+/* Bouton "Rejouer" */
+.btn-primary {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-white);
+  background-color: var(--color-btn-primary);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover { background-color: var(--color-btn-primary-hover); }
+
+/* Bouton "Menu" */
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-white);
+  background-color: var(--color-bg-input);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:hover { opacity: 0.82; }
+
+
+.history-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-bg-input);
+}
+
+.history-section h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  color: var(--color-text-label);
+}
+
+.history-table th {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--color-bg-input);
+  font-weight: 600;
+  color: var(--color-text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.72rem;
+}
+
+.history-table td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid oklch(0.279 0.037 260.031 / 0.5);
+}
+
+.history-table tr:last-child td { border-bottom: none; }
+
+/* Score en vert */
+.score-cell {
+  color: var(--color-text-title);
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  header h1 { font-size: 1.5rem; }
+
+  .setup-form { padding: 1.25rem; }
+
+  .game-area-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: space-between;
+  }
+
+  /* 2 colonnes sur mobile */
+  .game-board {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem;
+  }
+
+  .card {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .modal-stats   { flex-direction: column; gap: 0.75rem; align-items: center; }
+  .modal-actions { flex-direction: column; }
+  .modal-actions button { width: 100%; }
 }
