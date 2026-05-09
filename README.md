@@ -1,4 +1,4 @@
-# SAE-2.01 - Développement d'un application
+# SAE-2.01 - Développement d'une application
 
 ## Composition de l'équipe 
 
