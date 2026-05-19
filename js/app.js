@@ -40,7 +40,7 @@ const THEME_KEY = 'memory-theme';
 
 function applyTheme(theme) {
   document.body.classList.toggle('light-mode', theme === 'light');
-  btnTheme.textContent = theme === 'light' ? 'sombre🌙' : 'claire☀️';
+  btnTheme.textContent = theme === 'light' ? 'sombre🌙' : 'clair☀️';
 }
 
 // Charger la préférence sauvegardée (ou suivre le système)
