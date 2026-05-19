@@ -54,3 +54,13 @@ btnTheme.addEventListener('click', () => {
   localStorage.setItem(THEME_KEY, next);
   applyTheme(next);
 });
+
+// Écouteur global pour activer le mode triche via raccourci clavier
+window.addEventListener('keydown', (event) => {
+  // On vérifie si la partie est bien lancée (si game.id existe)
+  // Et on détecte la combinaison Ctrl + Shift + X
+  if (game.id && event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'x') {
+    event.preventDefault(); // Évite un comportement par défaut du navigateur
+    game.activateCheatMode();
+  }
+});

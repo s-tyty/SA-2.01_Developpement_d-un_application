@@ -431,4 +431,31 @@ export class Game {
     if (!confirm('Voulez-vous vraiment abandonner la partie ?')) return;
     this.endGame();
   }
+
+  /**
+   * Retourne temporairement toutes les cartes non trouvées du plateau
+   * pour aider au développement ou tester les fins de partie.
+   */
+  activateCheatMode() {
+    if (this.isLocked) return;
+
+    console.log("⚡ Mode triche activé !");
+    this.isLocked = true;
+
+    // On récupère toutes les cartes masquées qui n'ont pas encore été validées
+    const hiddenCards = document.querySelectorAll('.card:not(.matched)');
+
+    // On les affiche toutes d'un coup
+    hiddenCards.forEach(card => card.classList.add('flipped'));
+
+    // Au bout de 2 secondes, on recache celles qui n'étaient pas sélectionnées par le joueur
+    setTimeout(() => {
+      hiddenCards.forEach(card => {
+        if (!this.flippedCards.includes(card)) {
+          card.classList.remove('flipped');
+        }
+      });
+      this.isLocked = false;
+    }, 2000);
+  }
 }
