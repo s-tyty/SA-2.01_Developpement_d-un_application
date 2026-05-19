@@ -19,6 +19,54 @@
   --color-text-input: oklch(0.869 0.02 252.894);
   --color-text-white: oklch(1 0 89.876);
 
+
+  /* ── Mode clair ── */
+body.light-mode {
+  --color-bg-page:       oklch(0.96 0.01 265);
+  --color-bg-panel:      oklch(1 0 0);
+  --color-bg-input:      oklch(0.92 0.01 264);
+  --color-bg-card-front: oklch(0.88 0.02 257);
+  --color-border-input:  oklch(0.78 0.02 264);
+  --color-border-input-focus: oklch(0.45 0.05 258);
+  --color-border-card:   oklch(0.72 0.03 257);
+  --color-text-heading:  oklch(0.2 0.02 255);
+  --color-text-label:    oklch(0.35 0.02 252);
+  --color-text-input:    oklch(0.25 0.02 252);
+}
+
+/* ── Bouton thème ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 56rem;
+  margin-top: 1rem;
+
+}
+
+#btn-theme {
+
+  border: 1px solid var(--color-border-card);
+  border-radius: 0.375rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  line-height: 1;
+  display:flex;
+
+}
+
+#btn-theme:hover { opacity: 0.7; }
+/* ── Reset & base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+  
   /* Bouton principal (démarrer) */
   --color-btn-primary: oklch(0.508 0.105 165.612);
   --color-btn-primary-hover: oklch(0.596 0.127 163.225);
