@@ -47,7 +47,7 @@ header {
 }
 
 #btn-theme {
-
+  margin-top:15px;
   border: 1px solid var(--color-border-card);
   border-radius: 0.375rem;
   padding: 0.3rem 0.6rem;
