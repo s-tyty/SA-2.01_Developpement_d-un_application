@@ -33,3 +33,24 @@ document.querySelector('.game-form').addEventListener('submit', async function (
     alert(error.message || 'Erreur lors de la création de la partie');
   }
 });
+
+// ── Gestion du thème clair / sombre ──
+const btnTheme = document.getElementById('btn-theme');
+const THEME_KEY = 'memory-theme';
+
+function applyTheme(theme) {
+  document.body.classList.toggle('light-mode', theme === 'light');
+  btnTheme.textContent = theme === 'light' ? 'sombre🌙' : 'claire☀️';
+}
+
+// Charger la préférence sauvegardée (ou suivre le système)
+const saved = localStorage.getItem(THEME_KEY)
+    ?? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+applyTheme(saved);
+
+btnTheme.addEventListener('click', () => {
+  const next = document.body.classList.contains('light-mode') ? 'dark' : 'light';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+});
