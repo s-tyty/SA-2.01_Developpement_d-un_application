@@ -43,10 +43,9 @@ Chaque partie est enregistrée sur un serveur distant via une API REST.
 ### Communication serveur
 - Création de partie : envoi du pseudo et du niveau → récupération de l'identifiant de partie
 - Fin de partie : envoi du nombre de paires restantes à trouver
----
 ### Mode Sombre
 - Création d'un bouton qui permet de basculer les couleur du jeu en sombre ou clair selon l'envie de l'utilisateur
-
+---
 ## Architecture du projet
 
 ```
