@@ -45,6 +45,11 @@ Chaque partie est enregistrée sur un serveur distant via une API REST.
 - Fin de partie : envoi du nombre de paires restantes à trouver
 ### Mode Sombre
 - Création d'un bouton qui permet de basculer les couleurs du jeu en sombre ou clair selon l'envie de l'utilisateur
+### Mode Développeur
+- Activation via le raccourci clavier secret `Ctrl + Shift + X` lorsque la partie est lancée
+- Retourne et révèle instantanément toutes les cartes du plateau pendant 2 secondes
+- Sécurisé contre le spam : le plateau est verrouillé pendant la révélation pour éviter les clics abusifs
+- Conserve l'état des cartes que le joueur avait déjà retournées manuellement avant d'activer la triche
 ---
 ## Architecture du projet
 
