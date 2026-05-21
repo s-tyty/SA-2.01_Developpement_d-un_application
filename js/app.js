@@ -17,6 +17,7 @@ document.querySelector('.game-form').addEventListener('submit', async function (
   const pseudo     = document.querySelector('#input-name').value.trim();
   const difficulty = document.querySelector('#input-difficulty').value;
   const collection = document.querySelector('#input-collection').value;
+  const timerMode  = document.querySelector('#input-timer-mode').value;
 
   if (!pseudo) {
     document.getElementById('input-name').focus();
@@ -27,7 +28,7 @@ document.querySelector('.game-form').addEventListener('submit', async function (
   try {
     const data = await ApiService.createGame(pseudo, difficulty);
     console.log('Partie créée :', data, 'id =', data.id);
-    game.startGame(data.id, difficulty, collection, pseudo);
+    game.startGame(data.id, difficulty, collection, pseudo, false, timerMode);
   } catch (error) {
     console.error('Erreur :', error);
     alert(error.message || 'Erreur lors de la création de la partie');

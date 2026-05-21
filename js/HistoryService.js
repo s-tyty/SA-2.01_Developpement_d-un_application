@@ -21,7 +21,11 @@ export class HistoryService {
   static save(entry) {
     const history = HistoryService.load();
     // Ajoute en tête de liste
-    history.unshift({ ...entry, date: new Date().toISOString() });
+    history.unshift({
+      ...entry,
+      date: new Date().toISOString(),
+      timerMode: (entry.timerMode === 'ContreLaMmontre') ? 'ContreLaMontre' : (entry.timerMode || 'ContreLaMontre')
+    });
     // Limite à MAX_ENTRIES entrées
     const trimmed = history.slice(0, MAX_ENTRIES);
     try {

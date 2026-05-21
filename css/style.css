@@ -541,3 +541,7 @@ header h1 {
   .modal-actions { flex-direction: column; }
   .modal-actions button { width: 100%; }
 }
+
+.timer-bar-container.hidden {
+  display: none;
+}

@@ -72,14 +72,17 @@ export class DOMManager {
    * les doublons si le joueur rejoue plusieurs fois.
    *
    * @param {string}   playerName  - Pseudo du joueur à afficher
-   * @param {number}   timeSeconds - Durée totale de la partie en secondes
+   * @param initialTime
    * @param {number}   totalGroups - Nombre total de paires à trouver
    * @param {Function} onAbandon   - Fonction à appeler quand on clique sur "Abandonner"
+   * @param timerMode
+   * @param maxTime
    */
-  createHeader(playerName, timeSeconds, totalGroups, onAbandon) {
+  createHeader(playerName, initialTime, totalGroups, onAbandon, timerMode, maxTime)  {
     // On vide l'en-tête précédent avant d'en créer un nouveau
     this.gameAreaHeader.innerHTML = '';
-    this.maxTime = timeSeconds;
+    this.maxTime = maxTime;
+    this.timerMode = timerMode;
 
     // Affichage du pseudo du joueur
     const nameEl = document.createElement('span');
@@ -92,10 +95,9 @@ export class DOMManager {
     // Au départ, aucune paire n'est trouvée donc remaining = total
     this.updatePairsInfo(totalGroups, totalGroups);
 
-    // Chronomètre textuel (ex: "⏱ 03:00")
     this.timerEl = document.createElement('span');
     this.timerEl.className = 'game-timer';
-    this.updateTimer(timeSeconds);
+    this.updateTimer(initialTime, timerMode, maxTime);
 
     // Bouton d'abandon
     const btn = document.createElement('button');
@@ -106,8 +108,17 @@ export class DOMManager {
     // On ajoute tous les éléments dans l'en-tête
     this.gameAreaHeader.append(nameEl, this.pairsEl, this.timerEl, btn);
 
+    // Gestion de la barre de progression : visible uniquement en mode ContreLaMontre
+    const barContainer = document.querySelector('.timer-bar-container');
+    if (barContainer) {
+      if (timerMode === 'ContreLaMontre' && maxTime > 0) {
+        barContainer.classList.remove('hidden');
+      } else {
+        barContainer.classList.add('hidden');
+      }
+    }
     // On remet la barre de progression à 100% (pleine) au début de la partie
-    if (this.timerBar) {
+    if (this.timerBar && timerMode === 'ContreLaMontre') {
       this.timerBar.style.width = '100%';
       this.timerBar.className   = 'timer-bar';
     }
@@ -125,30 +136,31 @@ export class DOMManager {
    *     25–50 % → orange
    *     < 25 % → rouge clignotant
    *
-   * @param {number} timeSeconds - Nombre de secondes restantes
+   * @param currentSeconds
+   * @param timerMode
+   * @param maxTime
    */
-  updateTimer(timeSeconds) {
+  updateTimer(currentSeconds, timerMode, maxTime) {
     if (!this.timerEl) return;
 
     // Formatage en MM:SS (ex: 150 s → "02:30")
-    const m = String(Math.floor(timeSeconds / 60)).padStart(2, '0');
-    const s = String(timeSeconds % 60).padStart(2, '0');
+    const m = String(Math.floor(currentSeconds  / 60)).padStart(2, '0');
+    const s = String(currentSeconds  % 60).padStart(2, '0');
     this.timerEl.textContent = `⏱ ${m}:${s}`;
 
-    // Clignotement rouge si moins de 30 secondes
-    this.timerEl.classList.toggle('timer-warning', timeSeconds <= 30);
-
-    // Mise à jour de la barre de progression
-    if (this.timerBar && this.maxTime > 0) {
-      // Pourcentage de temps restant (de 100% à 0%)
-      const pct = (timeSeconds / this.maxTime) * 100;
-      this.timerBar.style.width = `${pct}%`;
-
-      // On retire les classes de couleur précédentes avant d'en mettre une nouvelle
-      this.timerBar.classList.remove('bar-ok', 'bar-warn', 'bar-danger');
-      if (pct > 50)      this.timerBar.classList.add('bar-ok');      // vert
-      else if (pct > 25) this.timerBar.classList.add('bar-warn');    // orange
-      else               this.timerBar.classList.add('bar-danger');  // rouge
+    if (timerMode === 'ContreLaMontre') {
+      this.timerEl.classList.toggle('timer-warning', currentSeconds <= 30);
+      if (this.timerBar && maxTime > 0) {
+        const pct = (currentSeconds / maxTime) * 100;
+        this.timerBar.style.width = `${pct}%`;
+        this.timerBar.classList.remove('bar-ok', 'bar-warn', 'bar-danger');
+        if (pct > 50)      this.timerBar.classList.add('bar-ok');
+        else if (pct > 25) this.timerBar.classList.add('bar-warn');
+        else               this.timerBar.classList.add('bar-danger');
+      }
+    } else {
+      // Mode chronometre : pas de clignotement
+      this.timerEl.classList.remove('timer-warning');
     }
   }
 
@@ -178,7 +190,7 @@ export class DOMManager {
    * @param {Function} opts.onReplay     - Fonction appelée quand on clique sur "Rejouer"
    * @param {Function} opts.onMenu       - Fonction appelée quand on clique sur "Menu"
    */
-  showEndModal({ title, icon, score, matchedPairs, totalPairs, timeLeft, onReplay, onMenu }) {
+  showEndModal({ title, icon, score, matchedPairs, totalPairs, timeLeft, timerMode, onReplay, onMenu }) {
     // On mémorise les callbacks pour que les boutons du modal puissent les appeler
     this._onReplay = onReplay;
     this._onMenu   = onMenu;
@@ -188,6 +200,12 @@ export class DOMManager {
     document.getElementById('modal-title').textContent = title;
     document.getElementById('modal-score').textContent = score;
     document.getElementById('modal-pairs').textContent = `${matchedPairs} / ${totalPairs}`;
+
+    // Changer le label selon le mode
+    const labelEl = document.getElementById('modal-time-label');
+    if (labelEl) {
+      labelEl.textContent = (timerMode === 'chronometre') ? 'Temps écoulé' : 'Temps restant';
+    }
 
     // Formatage du temps restant en MM:SS
     const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
@@ -239,17 +257,25 @@ export class DOMManager {
     entries.forEach(e => {
       const tr = document.createElement('tr');
 
-      // Formatage du temps restant en MM:SS
-      const m = String(Math.floor(e.timeLeft / 60)).padStart(2, '0');
-      const s = String(e.timeLeft % 60).padStart(2, '0');
+      let timeDisplay;
+      if (e.timerMode === 'chronometre') {
+        const m = String(Math.floor(e.time / 60)).padStart(2, '0');
+        const s = String(e.time % 60).padStart(2, '0');
+        timeDisplay = `${m}:${s} écoulé`;
+      } else {
+        // Mode ContreLaMontre
+        const m = String(Math.floor(e.time / 60)).padStart(2, '0');
+        const s = String(e.time % 60).padStart(2, '0');
+        timeDisplay = `${m}:${s} restant`;
+      }
 
       tr.innerHTML = `
-        <td>${e.pseudo}</td>
-        <td>${e.difficulty}</td>
-        <td class="score-cell">${e.score}</td>
-        <td>${e.matchedPairs}/${e.totalPairs}</td>
-        <td>${m}:${s}</td>
-      `;
+      <td>${e.pseudo}</td>
+      <td>${e.difficulty}</td>
+      <td class="score-cell">${e.score}</td>
+      <td>${e.matchedPairs}/${e.totalPairs}</td>
+      <td>${timeDisplay}</td>
+    `;
       body.appendChild(tr);
     });
   }

@@ -78,6 +78,10 @@ export class Game {
 
     /** @type {number} Durée totale de la partie en secondes (utilisée pour la barre de progression) */
     this.maxTime = 0;
+
+    this.timerMode = null;
+
+    this.currentTime = 0;
   }
 
   /**
@@ -126,8 +130,13 @@ export class Game {
    */
   computeScore() {
     const config = DIFFICULTY_CONFIG[this.difficulty];
-    const base   = this.matchedPairs * 100 + this.timeLeft * 2;
-    return Math.round(base * (config?.multiplier ?? 1));
+    if (this.timerMode === 'ContreLaMontre') {
+      const base = this.matchedPairs * 100 + this.currentTime * 2;
+      return Math.round(base * (config?.multiplier ?? 1));
+    } else { // chronometre : pas de bonus de temps
+      const base = this.matchedPairs * 100;
+      return Math.round(base * (config?.multiplier ?? 1));
+    }
   }
 
   /**
@@ -179,16 +188,20 @@ export class Game {
    */
   startTimer() {
     this.timerInterval = setInterval(() => {
-      this.timeLeft--;
-      this.dom.updateTimer(this.timeLeft);
-
-      // Si le temps est écoulé, on bloque les clics et on termine la partie
-      if (this.timeLeft <= 0) {
-        this.stopTimer();
-        this.isLocked = true;
-        this.endGame();
+      if (this.timerMode === 'ContreLaMontre') {
+        this.currentTime--;
+        if (this.currentTime <= 0) {
+          this.stopTimer();
+          this.isLocked = true;
+          this.endGame();
+        }
+      } else { // chronometre
+        this.currentTime++;
+        // Pas de fin automatique – le jeu se termine uniquement quand toutes les paires sont trouvées
       }
-    }, 1000); // s'exécute toutes les 1000 ms (1 seconde)
+      this.dom.updateTimer(this.currentTime, this.timerMode, this.maxTime);
+      this.timeLeft = this.currentTime; // synchronisation pour computeScore
+    }, 1000);
   }
 
   /**
@@ -318,7 +331,9 @@ export class Game {
       score,
       matchedPairs: this.matchedPairs,
       totalPairs:   this.totalPairs,
+      time:         this.currentTime,
       timeLeft:     this.timeLeft,
+      timerMode:    this.timerMode,
     });
 
     // On choisit le titre et l'icône selon la raison de fin de partie
@@ -346,11 +361,12 @@ export class Game {
       score,
       matchedPairs: this.matchedPairs,
       totalPairs:   this.totalPairs,
-      timeLeft:     this.timeLeft,
+      timeLeft:     this.currentTime,
+      timerMode:    this.timerMode,
       onReplay: () => {
         // Rejouer : on relance une partie avec les mêmes paramètres
         this.dom.hideEndModal();
-        this.startGame(null, this.difficulty, this._collection, this.playerName, true);
+        this.startGame(null, this.difficulty, this._collection, this.playerName, true, this.timerMode);
       },
       onMenu: () => {
         // Menu : on retourne au formulaire d'accueil
@@ -372,8 +388,9 @@ export class Game {
    * @param {string}             collection - Collection d'images ('animals', 'fruits', 'cars')
    * @param {string}             playerName - Pseudo du joueur
    * @param {boolean}            [isReplay] - Si true, on recrée une partie avant de démarrer
+   * @param timerMode
    */
-  async startGame(id, difficulty, collection, playerName, isReplay = false) {
+  async startGame(id, difficulty, collection, playerName, isReplay = false, timerMode = 'ContreLaMontre') {
     // En mode replay, on demande un nouvel identifiant au serveur
     if (isReplay) {
       try {
@@ -395,6 +412,7 @@ export class Game {
     this.matchedPairs = 0;
     this.flippedCards = [];
     this.isLocked     = false;
+    this.timerMode = timerMode;
 
     // Récupération de la configuration du niveau choisi
     const config = DIFFICULTY_CONFIG[difficulty];
@@ -404,8 +422,16 @@ export class Game {
       return;
     }
 
-    this.timeLeft   = config.timeSeconds;
-    this.maxTime    = config.timeSeconds;
+    if (this.timerMode === 'ContreLaMontre') {
+      this.currentTime = config.timeSeconds;
+      this.maxTime     = config.timeSeconds;
+    } else { // chronometre
+      this.currentTime = 0;
+      this.maxTime     = 0;   // pas de barre de progression
+    }
+
+    this.timeLeft = this.currentTime;
+
     this.totalPairs = config.totalCards / COPIES_PER_IMAGE;
 
     // Affichage du plateau et masquage du formulaire
@@ -413,7 +439,7 @@ export class Game {
     this.dom.showGameArea();
 
     // Création de l'en-tête (pseudo, chrono, compteur de paires, bouton abandon)
-    this.dom.createHeader(playerName, this.timeLeft, this.totalPairs, () => this.onAbandon());
+    this.dom.createHeader(playerName, this.currentTime, this.totalPairs, () => this.onAbandon(), this.timerMode, this.maxTime);
 
     // Préparation et affichage des cartes mélangées
     const cards = this.prepareCards(collection, config.totalCards);

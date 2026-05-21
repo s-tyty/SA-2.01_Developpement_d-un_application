@@ -41,6 +41,14 @@
         </select>
       </div>
 
+      <label for="input-timer-mode">Mode du temps</label>
+      <div>
+        <select id="input-timer-mode">
+          <option value="ContreLaMontre">⏳ Contre-la-montre (temps limité)</option>
+          <option value="chronometre">⏱️  chronomètre </option>
+        </select>
+      </div>
+
       <button id="btn-start" type="submit">Commencer la partie</button>
     </form>
 
@@ -87,7 +95,7 @@
           <span id="modal-pairs" class="stat-value"></span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">Temps restant</span>
+          <span class="stat-label" id="modal-time-label">Temps restant</span>
           <span id="modal-time" class="stat-value"></span>
         </div>
       </div>

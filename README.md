@@ -164,4 +164,15 @@ Le score est affiché dans le modal de fin et sauvegardé dans l'historique.
 - Sécurisé contre le spam : le plateau est verrouillé pendant la révélation pour éviter les clics abusifs
 - Conserve l'état des cartes que le joueur avait déjà retournées manuellement avant d'activer la triche
 
+### 9. Mode du temps
+
+L’utilisateur peut choisir entre deux comportements du chronomètre dans le formulaire de démarrage :
+
+- **Contre-la-montre** (défaut) : temps limité selon la difficulté, décompte jusqu’à 0.  
+  Score = (paires trouvées × 100 + temps restant × 2) × multiplicateur.
+
+- **Chronomètre** : le temps part de zéro et s’incrémente jusqu’à la fin de la partie (pas de limite).  
+  Score = paires trouvées × 100 × multiplicateur (aucun bonus de temps).
+
+L’historique affiche le temps écoulé pour les parties en mode chronomètre, et le temps restant pour le mode contre-la-montre.
 
