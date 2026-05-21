@@ -43,13 +43,6 @@ Chaque partie est enregistrée sur un serveur distant via une API REST.
 ### Communication serveur
 - Création de partie : envoi du pseudo et du niveau → récupération de l'identifiant de partie
 - Fin de partie : envoi du nombre de paires restantes à trouver
-### Mode Sombre
-- Création d'un bouton qui permet de basculer les couleurs du jeu en sombre ou clair selon l'envie de l'utilisateur
-### Mode Développeur
-- Activation via le raccourci clavier secret `Ctrl + Shift + X` lorsque la partie est lancée
-- Retourne et révèle instantanément toutes les cartes du plateau pendant 2 secondes
-- Sécurisé contre le spam : le plateau est verrouillé pendant la révélation pour éviter les clics abusifs
-- Conserve l'état des cartes que le joueur avait déjà retournées manuellement avant d'activer la triche
 ---
 ## Architecture du projet
 
@@ -163,6 +156,12 @@ Le score est affiché dans le modal de fin et sauvegardé dans l'historique.
 ### 6. Responsive mobile
 - La grille de jeu passe automatiquement en 2 colonnes sur les écrans de moins de 600 px
 - L'en-tête de jeu et le modal s'adaptent pour rester lisibles sur téléphone
-
+### 7. Mode Sombre
+- Création d'un bouton qui permet de basculer les couleurs du jeu en sombre ou clair selon l'envie de l'utilisateur
+### 8. Mode Développeur
+- Activation via le raccourci clavier secret `Ctrl + Shift + X` lorsque la partie est lancée
+- Retourne et révèle instantanément toutes les cartes du plateau pendant 2 secondes
+- Sécurisé contre le spam : le plateau est verrouillé pendant la révélation pour éviter les clics abusifs
+- Conserve l'état des cartes que le joueur avait déjà retournées manuellement avant d'activer la triche
 
 
